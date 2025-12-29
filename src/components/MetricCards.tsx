@@ -11,10 +11,12 @@ interface Metric {
 
 interface MetricCardsProps {
   metrics: {
-    totalCommits: number;
-    publicRepos: number;
+    total_commits: number;
+    public_repos: number;
     followers: number;
-    originalReposPercent: number;
+    original_repos_percent: number;
+    activity_consistency: number;
+    language_diversity: number;
   };
 }
 
@@ -22,14 +24,14 @@ export const MetricCards = ({ metrics }: MetricCardsProps) => {
   const cards: Metric[] = [
     {
       label: "Total Commits",
-      value: metrics.totalCommits.toLocaleString(),
+      value: metrics.total_commits.toLocaleString(),
       icon: GitCommit,
       trend: 12,
       trendLabel: "last month"
     },
     {
       label: "Public Repos",
-      value: metrics.publicRepos,
+      value: metrics.public_repos,
       icon: FolderGit2,
       trend: 3,
       trendLabel: "new this month"
@@ -43,7 +45,7 @@ export const MetricCards = ({ metrics }: MetricCardsProps) => {
     },
     {
       label: "Original Repos",
-      value: `${metrics.originalReposPercent}%`,
+      value: `${metrics.original_repos_percent}%`,
       icon: Star,
       trend: -2,
       trendLabel: "vs last month"

@@ -6,49 +6,154 @@ import { RedFlagsPanel } from "@/components/RedFlagsPanel";
 import { MetricCards } from "@/components/MetricCards";
 import { AnalysisTabs } from "@/components/AnalysisTabs";
 import { LanguageDistribution } from "@/components/LanguageDistribution";
-import { Github, ArrowRight, Sparkles } from "lucide-react";
-
-const mockRedFlags = [
-  {
-    id: "1",
-    title: "Suspicious Commit Timing",
-    description: "85% of commits between 2-3 AM on Sundays",
-    severity: "high" as const,
-    details: "Most developers commit during regular working hours. An unusual concentration of commits during late-night hours on weekends could indicate automated or batch commits, which is a common pattern in purchased or fabricated GitHub profiles.",
-  },
-  {
-    id: "2",
-    title: "Low Original Content Ratio",
-    description: "Only 23% of repositories are original work",
-    severity: "medium" as const,
-    details: "While forking repositories is normal, having a high ratio of forked to original repositories suggests limited original contribution. Authentic developers typically have a mix of original projects showcasing their skills.",
-  },
-];
-
-const mockMetrics = {
-  totalCommits: 1247,
-  publicRepos: 23,
-  followers: 892,
-  originalReposPercent: 78,
-};
+import { LoadingStates } from "@/components/LoadingStates";
+import { useGitHubAnalysis, useHealthCheck } from "@/hooks/useGitHubAnalysis";
+import { Github, ArrowRight, Sparkles, AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [username, setUsername] = useState("");
-  const [isAnalyzed, setIsAnalyzed] = useState(false);
-  const [score] = useState(78);
-  const [confidence] = useState(87);
+  const { toast } = useToast();
+  
+  const { 
+    analyzeProfile, 
+    isAnalyzing, 
+    analysisData, 
+    analysisError, 
+    isSuccess,
+    reset 
+  } = useGitHubAnalysis();
+  
+  const { data: healthData } = useHealthCheck();
 
   const handleSearch = () => {
-    if (username.trim()) {
-      setIsAnalyzed(true);
+    if (!username.trim()) {
+      toast({
+        title: "Username Required",
+        description: "Please enter a GitHub username to analyze.",
+        variant: "destructive",
+      });
+      return;
     }
+
+    if (!healthData?.ml_model_loaded) {
+      toast({
+        title: "ML Model Not Ready",
+        description: "The ML analysis model is still loading. Please try again in a moment.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    reset(); // Reset previous analysis
+    analyzeProfile(username);
   };
 
   return (
     <div className="min-h-screen">
       <Header username={username} setUsername={setUsername} onSearch={handleSearch} />
       
-      {!isAnalyzed ? (
+      {/* Health Status Indicator */}
+      {healthData && (
+        <div className="px-6 py-2">
+          <div className={`flex items-center gap-2 text-sm ${
+            healthData.ml_model_loaded ? 'text-green-400' : 'text-yellow-400'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${
+              healthData.ml_model_loaded ? 'bg-green-400' : 'bg-yellow-400'
+            }`} />
+            ML Model: {healthData.ml_model_loaded ? 'Ready' : 'Loading...'}
+          </div>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isAnalyzing && (
+        <div className="px-6 py-8">
+          <LoadingStates />
+        </div>
+      )}
+
+      {/* Error State */}
+      {analysisError && (
+        <div className="px-6 py-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass rounded-2xl p-6 border-destructive/30"
+          >
+            <div className="flex items-center gap-3 text-destructive">
+              <AlertCircle className="w-6 h-6" />
+              <div>
+                <h3 className="font-semibold">Analysis Failed</h3>
+                <p className="text-sm text-muted-foreground">
+                  {analysisError.message || 'Unable to analyze this profile. Please check the username and try again.'}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Analysis Results */}
+      {isSuccess && analysisData && (
+        <div className="px-6 py-8 space-y-8">
+          {/* Score and Red Flags Row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <ScoreGauge 
+              score={analysisData.authenticity_score} 
+              confidence={analysisData.confidence} 
+            />
+            <RedFlagsPanel flags={analysisData.red_flags} />
+          </div>
+
+          {/* Metrics */}
+          <MetricCards metrics={analysisData.metrics} />
+
+          {/* Analysis Tabs */}
+          <AnalysisTabs />
+
+          {/* Language Distribution */}
+          <LanguageDistribution />
+        </div>
+      )}
+
+      {/* Welcome State */}
+      {!isAnalyzing && !isSuccess && !analysisError && (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center max-w-2xl"
+          >
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center mx-auto mb-6">
+              <Github className="w-10 h-10 text-primary-foreground" />
+            </div>
+            
+            <h1 className="text-4xl font-display font-bold text-gradient mb-4">
+              Analyze GitHub Authenticity
+            </h1>
+            
+            <p className="text-xl text-muted-foreground mb-8">
+              Enter a GitHub username above to analyze profile authenticity using our advanced ML model
+            </p>
+            
+            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span>ML-Powered Analysis</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <ArrowRight className="w-4 h-4 text-primary" />
+                <span>Real-time Results</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </div>
+  );
+};      {!isAnalyzed ? (
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

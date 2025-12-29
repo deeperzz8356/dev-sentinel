@@ -1,0 +1,19 @@
+# Core API Framework
+fastapi
+uvicorn
+pydantic
+
+# GitHub API Integration
+PyGithub
+requests
+
+# Basic data processing
+numpy
+python-dateutil
+
+# Environment & Config
+python-dotenv
+pydantic-settings
+
+# CORS for frontend integration
+python-multipart
