@@ -1,4 +1,4 @@
-# 🛡️ Dev-Sentinel
+# 🛡️ Dev-Sentinel(DevDebt)
 
 **Full-Stack AI-Powered GitHub Profile Authenticity Analyzer**
 
