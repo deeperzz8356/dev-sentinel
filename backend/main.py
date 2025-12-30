@@ -14,6 +14,12 @@ load_dotenv()
 
 app = FastAPI(title="Dev-Sentinel API", version="1.0.0")
 
+# Debug environment variables
+print(f"🔍 Environment check:")
+print(f"🔑 GITHUB_TOKEN exists: {bool(os.getenv('GITHUB_TOKEN'))}")
+print(f"🔑 GITHUB_TOKEN length: {len(os.getenv('GITHUB_TOKEN', ''))}")
+print(f"🌍 ENVIRONMENT: {os.getenv('ENVIRONMENT', 'development')}")
+
 # Get environment
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 

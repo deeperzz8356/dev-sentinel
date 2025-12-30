@@ -19,10 +19,12 @@ class GitHubService:
         """
         # TEMPORARILY DISABLE RATE LIMITING FOR TESTING
         print(f"🔍 FORCING REAL GITHUB DATA for: {username}")
+        print(f"🔑 GitHub token available: {bool(self.token)}")
+        print(f"🔑 Token length: {len(self.token) if self.token else 0}")
         
         # If no token is provided, use mock data immediately to avoid rate limits
         if not self.token:
-            print(f"🔄 No GitHub token provided. Using mock data for {username}")
+            print(f"❌ No GitHub token provided. Using mock data for {username}")
             return self._get_mock_profile_data(username)
         
         try:
