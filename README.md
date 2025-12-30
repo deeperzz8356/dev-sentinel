@@ -1,73 +1,111 @@
-# Welcome to your Lovable project
+# Dev-Sentinel ML Backend
 
-## Project info
+This is the ML-powered backend for Dev-Sentinel that analyzes GitHub profiles for authenticity using machine learning.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+- **ML-Powered Analysis**: Uses Random Forest and Isolation Forest algorithms
+- **GitHub API Integration**: Fetches real profile data via PyGithub
+- **Real-time Analysis**: Fast API endpoints for instant results
+- **Anomaly Detection**: Identifies statistically unusual patterns
+- **Red Flag Generation**: Automatically detects suspicious behaviors
 
-There are several ways of editing your application.
+## Setup Instructions
 
-**Use Lovable**
+### 1. Install Dependencies
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+cd backend
+pip install -r requirements.txt
 ```
 
-**Edit a file directly in GitHub**
+### 2. Configure Environment
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+cp .env.example .env
+```
 
-**Use GitHub Codespaces**
+Edit `.env` and add your GitHub Personal Access Token:
+```
+GITHUB_TOKEN=your_github_token_here
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+**To get a GitHub token:**
+1. Go to GitHub Settings → Developer settings → Personal access tokens
+2. Generate new token (classic)
+3. Select scopes: `public_repo`, `read:user`
+4. Copy the token to your `.env` file
 
-## What technologies are used for this project?
+### 3. Run the Server
 
-This project is built with:
+```bash
+python main.py
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+The API will be available at `http://localhost:8000`
 
-## How can I deploy this project?
+### 4. Test the API
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```bash
+# Health check
+curl http://localhost:8000/health
 
-## Can I connect a custom domain to my Lovable project?
+# Analyze a profile
+curl -X POST http://localhost:8000/analyze/octocat
+```
 
-Yes, you can!
+## API Endpoints
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- `GET /` - API status
+- `GET /health` - Health check and ML model status
+- `POST /analyze/{username}` - Analyze GitHub profile
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## ML Model Features
+
+The model analyzes these patterns:
+
+1. **Commit Frequency** - How often the user commits
+2. **Weekend Commit Ratio** - Percentage of weekend commits
+3. **Night Commit Ratio** - Percentage of late-night commits
+4. **Original Repo Ratio** - Percentage of non-forked repositories
+5. **Commit Size Variance** - Consistency of commit sizes
+6. **Activity Consistency** - Regularity of activity patterns
+7. **Follower/Repo Ratio** - Social engagement metrics
+8. **Language Diversity** - Number of programming languages used
+
+## Red Flags Detected
+
+- Suspicious weekend activity (>40% weekend commits)
+- Unusual night activity (>30% night commits)
+- Low original content (<40% original repos)
+- Inconsistent activity patterns
+- Statistical anomalies detected by ML model
+
+## Model Training
+
+The system includes an initial synthetic dataset for training. For production use:
+
+1. Collect labeled data of authentic vs suspicious profiles
+2. Replace `_generate_synthetic_training_data()` with real data
+3. Retrain the model with `ml_analyzer._train_initial_model()`
+
+## Rate Limits
+
+- GitHub API: 5000 requests/hour (authenticated)
+- Unauthenticated: 60 requests/hour
+- The service automatically handles rate limiting
+
+## Architecture
+
+```
+backend/
+├── main.py                 # FastAPI application
+├── services/
+│   ├── github_service.py   # GitHub API integration
+│   └── ml_analyzer.py      # ML model and analysis
+├── models/
+│   └── analysis_models.py  # Pydantic data models
+└── models/                 # Trained ML models (auto-generated)
+    ├── authenticity_model.joblib
+    └── scaler.joblib
+```
