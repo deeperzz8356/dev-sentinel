@@ -10,21 +10,15 @@ class GitHubService:
     def __init__(self, token: Optional[str] = None):
         self.github = Github(token) if token else Github()
         self.token = token
-        self.max_repos = int(os.getenv("MAX_REPOS_PER_ANALYSIS", "10"))
+        self.max_repos = int(os.getenv("MAX_REPOS_PER_ANALYSIS", "50"))  # Increased from 10 to 50
         self.max_commits_per_repo = int(os.getenv("MAX_COMMITS_PER_REPO", "20"))
         
     async def get_profile_data(self, username: str) -> Dict:
         """
         Fetch comprehensive GitHub profile data for analysis with rate limiting
         """
-        # Check rate limits before making requests
-        estimated_calls = rate_limiter.estimate_api_calls("full")
-        can_proceed, reason = rate_limiter.can_make_request(estimated_calls)
-        
-        if not can_proceed:
-            print(f"🚫 Rate limit protection: {reason}")
-            print(f"🔄 Using mock data for {username} to protect your GitHub token")
-            return self._get_mock_profile_data(username)
+        # TEMPORARILY DISABLE RATE LIMITING FOR TESTING
+        print(f"🔍 FORCING REAL GITHUB DATA for: {username}")
         
         # If no token is provided, use mock data immediately to avoid rate limits
         if not self.token:
@@ -33,18 +27,6 @@ class GitHubService:
         
         try:
             actual_api_calls = 0
-            
-            # Check GitHub rate limit with better error handling
-            try:
-                rate_limit = self.github.get_rate_limit()
-                actual_api_calls += 1
-                
-                if rate_limit.core.remaining < estimated_calls + 10:  # Keep 10 as buffer
-                    print(f"⚠️  GitHub rate limit low ({rate_limit.core.remaining} remaining). Using mock data.")
-                    return self._get_mock_profile_data(username)
-            except Exception as rate_error:
-                print(f"⚠️  Could not check GitHub rate limit: {rate_error}")
-                # Continue with the analysis anyway
             
             print(f"🔍 Fetching real GitHub data for: {username}")
             user = self.github.get_user(username)
