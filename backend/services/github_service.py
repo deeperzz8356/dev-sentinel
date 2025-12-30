@@ -8,8 +8,12 @@ from .rate_limiter import rate_limiter
 
 class GitHubService:
     def __init__(self, token: Optional[str] = None):
+        # Force use GitHub API even without token for testing
+        print(f"🔧 GitHubService init - token provided: {bool(token)}")
+        if not token:
+            print("⚠️  No token provided, but will try GitHub API anyway")
         self.github = Github(token) if token else Github()
-        self.token = token
+        self.token = token or "test"  # Force token to be truthy for testing
         self.max_repos = int(os.getenv("MAX_REPOS_PER_ANALYSIS", "50"))  # Increased from 10 to 50
         self.max_commits_per_repo = int(os.getenv("MAX_COMMITS_PER_REPO", "20"))
         
@@ -17,15 +21,10 @@ class GitHubService:
         """
         Fetch comprehensive GitHub profile data for analysis with rate limiting
         """
-        # TEMPORARILY DISABLE RATE LIMITING FOR TESTING
+        # FORCE REAL GITHUB DATA - NO FALLBACKS
         print(f"🔍 FORCING REAL GITHUB DATA for: {username}")
         print(f"🔑 GitHub token available: {bool(self.token)}")
         print(f"🔑 Token length: {len(self.token) if self.token else 0}")
-        
-        # If no token is provided, use mock data immediately to avoid rate limits
-        if not self.token:
-            print(f"❌ No GitHub token provided. Using mock data for {username}")
-            return self._get_mock_profile_data(username)
         
         try:
             actual_api_calls = 0
