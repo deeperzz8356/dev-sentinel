@@ -1,0 +1,30 @@
+# Backend files (not needed for frontend deployment)
+backend/
+*.py
+*.pyc
+__pycache__/
+.env
+.env.local
+
+# Development files
+node_modules/
+.git/
+.vscode/
+.idea/
+
+# Build artifacts
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+*.swp
+*.swo
+*~

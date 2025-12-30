@@ -6,7 +6,7 @@ import os
 from dotenv import load_dotenv
 
 from services.github_service import GitHubService
-from services.trained_ml_analyzer import TrainedMLAnalyzer  # Using simple analyzer instead
+from services.trained_ml_analyzer import TrainedMLAnalyzer
 from services.rate_limiter import rate_limiter
 from models.analysis_models import ProfileAnalysis, RedFlag
 
@@ -14,10 +14,30 @@ load_dotenv()
 
 app = FastAPI(title="Dev-Sentinel API", version="1.0.0")
 
+# Get environment
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+
+# CORS origins based on environment
+if ENVIRONMENT == "production":
+    allowed_origins = [
+        "https://dev-sentinel.vercel.app",
+        "https://dev-sentinel-*.vercel.app",
+        "https://*.vercel.app",
+        "http://localhost:8080",
+        "http://localhost:8081"
+    ]
+else:
+    allowed_origins = [
+        "http://localhost:8080", 
+        "http://localhost:8081", 
+        "http://localhost:8082", 
+        "http://localhost:3000"
+    ]
+
 # CORS middleware for frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "http://localhost:8081", "http://localhost:8082", "http://localhost:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -89,4 +109,5 @@ async def get_usage_stats():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8003)
+    port = int(os.getenv("PORT", 8003))
+    uvicorn.run(app, host="0.0.0.0", port=port)
