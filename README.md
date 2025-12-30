@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # 🛡️ Dev-Sentinel
+=======
+# 🛡️ Dev-Sentinel(DevDebt)
+>>>>>>> 2d228597f2bbc784750ca480d3d22b336282bed5
 
 **Full-Stack AI-Powered GitHub Profile Authenticity Analyzer**
 
@@ -823,4 +827,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 [⭐ Star us on GitHub](https://github.com/yourusername/dev-sentinel) • [🐛 Report Bug](https://github.com/yourusername/dev-sentinel/issues) • [✨ Request Feature](https://github.com/yourusername/dev-sentinel/issues)
 
+<<<<<<< HEAD
 </div>
+=======
+</div>
+>>>>>>> 2d228597f2bbc784750ca480d3d22b336282bed5
