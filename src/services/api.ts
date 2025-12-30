@@ -92,35 +92,28 @@ export interface ActivityPatterns {
 
 class ApiService {
   async analyzeProfile(username: string): Promise<AnalysisResponse> {
-    // Try production API first
-    try {
-      console.log(`🔍 Analyzing profile: ${username}`);
-      console.log(`📡 API URL: ${API_BASE_URL}/analyze/${username}`);
-      
-      const response = await fetch(`${API_BASE_URL}/analyze/${username}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+    console.log(`🔍 Analyzing profile: ${username}`);
+    console.log(`📡 API URL: ${API_BASE_URL}/analyze/${username}`);
+    
+    const response = await fetch(`${API_BASE_URL}/analyze/${username}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-      console.log(`📊 Response status: ${response.status}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Real ML analysis received:', data);
-        return data;
-      } else {
-        const errorText = await response.text();
-        console.error(`❌ API Error ${response.status}:`, errorText);
-      }
-    } catch (error) {
-      console.error('❌ Network error:', error);
-      console.log('🎭 Falling back to mock data...');
+    console.log(`📊 Response status: ${response.status}`);
+    console.log(`📊 Response headers:`, response.headers);
+    
+    if (response.ok) {
+      const data = await response.json();
+      console.log('✅ Real ML analysis received:', data);
+      return data;
+    } else {
+      const errorText = await response.text();
+      console.error(`❌ API Error ${response.status}:`, errorText);
+      throw new Error(`API Error: ${response.status} - ${errorText}`);
     }
-
-    // Fallback to mock data for demo
-    return this.getMockAnalysis(username);
   }
 
   private getMockAnalysis(username: string): AnalysisResponse {
