@@ -94,6 +94,9 @@ class ApiService {
   async analyzeProfile(username: string): Promise<AnalysisResponse> {
     // Try production API first
     try {
+      console.log(`🔍 Analyzing profile: ${username}`);
+      console.log(`📡 API URL: ${API_BASE_URL}/analyze/${username}`);
+      
       const response = await fetch(`${API_BASE_URL}/analyze/${username}`, {
         method: 'POST',
         headers: {
@@ -101,11 +104,19 @@ class ApiService {
         },
       });
 
+      console.log(`📊 Response status: ${response.status}`);
+      
       if (response.ok) {
-        return response.json();
+        const data = await response.json();
+        console.log('✅ Real ML analysis received:', data);
+        return data;
+      } else {
+        const errorText = await response.text();
+        console.error(`❌ API Error ${response.status}:`, errorText);
       }
     } catch (error) {
-      console.log('Production API unavailable, using mock data...');
+      console.error('❌ Network error:', error);
+      console.log('🎭 Falling back to mock data...');
     }
 
     // Fallback to mock data for demo
