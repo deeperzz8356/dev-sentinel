@@ -1,0 +1,35 @@
+{
+  "model_type": "Random Forest",
+  "feature_names": [
+    "account_age_days",
+    "commit_hour_entropy",
+    "weekend_commit_ratio",
+    "commit_time_clustering",
+    "days_since_last_commit",
+    "commit_frequency_variance",
+    "burst_activity_score",
+    "avg_commit_size",
+    "trivial_commit_ratio",
+    "large_commit_ratio",
+    "commit_message_length_avg",
+    "empty_commit_ratio",
+    "commit_size_stddev",
+    "fork_ratio",
+    "original_repo_ratio",
+    "avg_stars_per_repo",
+    "zero_star_repo_ratio",
+    "archived_repo_ratio",
+    "repo_language_diversity",
+    "follower_following_ratio",
+    "contributions_per_repo",
+    "public_gist_count",
+    "organization_membership_count"
+  ],
+  "trained_at": "2025-12-30T01:33:32.829010",
+  "test_auc": 1.0,
+  "training_samples": 2000,
+  "data_source": "DevDebt_2000_Profiles_With_Usernames.xlsx",
+  "label_encoders": [
+    "target"
+  ]
+}

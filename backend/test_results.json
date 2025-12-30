@@ -1,0 +1,65 @@
+{
+  "total_tests": 6,
+  "passed": 2,
+  "failed": 4,
+  "success_rate": 33.33333333333333,
+  "results": [
+    {
+      "test": "API Health",
+      "success": true,
+      "message": "API is healthy, ML model loaded: True",
+      "timestamp": "2025-12-30T15:24:21.945401",
+      "data": {
+        "status": "healthy",
+        "ml_model_loaded": true
+      }
+    },
+    {
+      "test": "Profile Analysis (octocat)",
+      "success": true,
+      "message": "Analysis completed successfully",
+      "timestamp": "2025-12-30T15:24:30.010182",
+      "data": {
+        "response_time": "8.06s",
+        "authenticity_score": "48/100",
+        "confidence": "52%",
+        "red_flags_count": 0,
+        "total_commits": 0,
+        "public_repos": 8,
+        "followers": 21344
+      }
+    },
+    {
+      "test": "Multiple Profiles",
+      "success": false,
+      "message": "Analyzed 0/3 profiles successfully (0.0%)",
+      "timestamp": "2025-12-30T15:25:36.205397",
+      "data": {
+        "success_rate": "0.0%",
+        "successful": 0,
+        "total": 3
+      }
+    },
+    {
+      "test": "Error Handling",
+      "success": false,
+      "message": "Unexpected error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)",
+      "timestamp": "2025-12-30T15:25:48.256848",
+      "data": null
+    },
+    {
+      "test": "Rate Limiting",
+      "success": false,
+      "message": "Error during rate limit test: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=15)",
+      "timestamp": "2025-12-30T15:26:05.329922",
+      "data": null
+    },
+    {
+      "test": "ML Model Features (torvalds)",
+      "success": false,
+      "message": "Error: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=25)",
+      "timestamp": "2025-12-30T15:26:32.407650",
+      "data": null
+    }
+  ]
+}

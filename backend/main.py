@@ -6,7 +6,8 @@ import os
 from dotenv import load_dotenv
 
 from services.github_service import GitHubService
-from services.simple_analyzer import SimpleAnalyzer  # Using simple analyzer instead
+from services.trained_ml_analyzer import TrainedMLAnalyzer  # Using simple analyzer instead
+from services.rate_limiter import rate_limiter
 from models.analysis_models import ProfileAnalysis, RedFlag
 
 load_dotenv()
@@ -16,7 +17,7 @@ app = FastAPI(title="Dev-Sentinel API", version="1.0.0")
 # CORS middleware for frontend integration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8081", "http://localhost:3000"],
+    allow_origins=["http://localhost:8080", "http://localhost:8081", "http://localhost:8082", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -24,7 +25,7 @@ app.add_middleware(
 
 # Initialize services
 github_service = GitHubService(token=os.getenv("GITHUB_TOKEN"))
-analyzer = SimpleAnalyzer()  # Using simple rule-based analyzer
+analyzer = TrainedMLAnalyzer()  # Using simple rule-based analyzer
 
 class AnalysisRequest(BaseModel):
     username: str
@@ -48,12 +49,44 @@ async def analyze_profile(username: str):
         return analysis
         
     except Exception as e:
+        print(f"❌ Analysis failed for {username}: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/test-mock/{username}")
+async def test_mock_data(username: str):
+    """
+    Test endpoint to generate mock data for testing
+    """
+    try:
+        # Force mock data generation
+        mock_data = github_service._get_mock_profile_data(username)
+        analysis = analyzer.analyze_profile(mock_data)
+        return analysis
+    except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "ml_model_loaded": analyzer.is_model_loaded()}
 
+@app.get("/rate-limit")
+async def get_rate_limit():
+    """Get GitHub API rate limit status"""
+    try:
+        rate_info = github_service.get_rate_limit_info()
+        return rate_info
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.get("/usage-stats")
+async def get_usage_stats():
+    """Get current API usage statistics"""
+    try:
+        stats = rate_limiter.get_usage_stats()
+        return stats
+    except Exception as e:
+        return {"error": str(e)}
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8003)

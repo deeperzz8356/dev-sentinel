@@ -54,6 +54,15 @@ export const Header = ({ username, setUsername, onSearch }: HeaderProps) => {
 
       {/* User Controls */}
       <div className="flex items-center gap-4">
+        <button 
+          onClick={() => {
+            setUsername("demo-user");
+            onSearch();
+          }}
+          className="px-4 py-2 rounded-lg bg-gradient-to-r from-success to-emerald-500 text-white font-medium text-sm hover:opacity-90 transition-opacity"
+        >
+          Demo Analysis
+        </button>
         <button className="p-2.5 rounded-xl glass-hover text-muted-foreground hover:text-foreground transition-colors">
           <Bell className="w-5 h-5" />
         </button>
