@@ -25,7 +25,7 @@
     "public_gist_count",
     "organization_membership_count"
   ],
-  "trained_at": "2025-12-30T01:33:32.829010",
+  "trained_at": "2025-12-30T21:52:44.539868",
   "test_auc": 1.0,
   "training_samples": 2000,
   "data_source": "DevDebt_2000_Profiles_With_Usernames.xlsx",
