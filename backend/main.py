@@ -20,9 +20,12 @@ ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
 # CORS origins based on environment
 if ENVIRONMENT == "production":
     allowed_origins = [
+        "*",  # Allow all origins for now (temporary fix)
         "https://dev-sentinel.vercel.app",
-        "https://dev-sentinel-*.vercel.app",
+        "https://dev-sentinel-*.vercel.app", 
         "https://*.vercel.app",
+        "https://devdebt.vercel.app",
+        "https://devdebt-*.vercel.app",
         "http://localhost:8080",
         "http://localhost:8081"
     ]
@@ -45,7 +48,7 @@ app.add_middleware(
 
 # Initialize services
 github_service = GitHubService(token=os.getenv("GITHUB_TOKEN"))
-analyzer = TrainedMLAnalyzer()  # Using simple rule-based analyzer
+analyzer = TrainedMLAnalyzer()
 
 class AnalysisRequest(BaseModel):
     username: str

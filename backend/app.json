@@ -1,0 +1,28 @@
+{
+  "name": "dev-sentinel-api",
+  "description": "GitHub Profile Authenticity Analyzer API",
+  "image": "heroku/python",
+  "repository": "https://github.com/yourusername/dev-sentinel",
+  "keywords": ["python", "fastapi", "machine-learning", "github"],
+  "env": {
+    "GITHUB_TOKEN": {
+      "description": "GitHub Personal Access Token",
+      "value": "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"
+    },
+    "ENVIRONMENT": {
+      "description": "Environment setting",
+      "value": "production"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: dev-sentinel-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GITHUB_TOKEN
+        value: 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
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        generateValue: true
